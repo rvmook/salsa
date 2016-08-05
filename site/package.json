@@ -1,0 +1,9 @@
+{
+  "name": "salsa",
+  "version": "0.0.1",
+  "description": "Salsa - Unity & Socket.IO Installation",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "1.4.8"
+  }
+}

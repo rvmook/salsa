@@ -1,0 +1,14 @@
+.idea
+.DS_STORE
+.sass-cache
+node_modules
+*.meta
+*.csproj
+*.sln
+
+unity/Library
+unity/Assets/Best HTTP (Pro)
+unity/Assets/Standard Assets
+unity/Temp
+unity/ProjectSettings
+unity/Assets/Editor
