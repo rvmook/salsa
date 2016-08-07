@@ -1,9 +1,16 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+
 using BestHTTP;
 using BestHTTP.SocketIO;
 
 public class NetworkHandler : MonoBehaviour {
+
+	public GameObject salsaPrefab;
+
+	Dictionary<String, GameObject> salsas = new Dictionary<String, GameObject>();
 
 	SocketManager manager;
 	
@@ -27,7 +34,14 @@ public class NetworkHandler : MonoBehaviour {
 
 	void OnNewSalsa(Socket socket, Packet packet, params object[] args) {
 
-		Debug.Log("OnNewSalsa, id: " + args[0]);
+		String id = (String)args[0];
+
+		Debug.Log("OnNewSalsa, id: " + id);
+
+		GameObject salsa = (GameObject)Instantiate(salsaPrefab, transform.position,Quaternion.identity);
+
+
+		salsas.Add(id, salsa);
 	}
 	
 	void OnFall(Socket socket, Packet packet, params object[] args) {
@@ -36,8 +50,14 @@ public class NetworkHandler : MonoBehaviour {
 	}
 
 	void OnRotate(Socket socket, Packet packet, params object[] args) {
+		
+		String id = (String)args[0];
+		double angle = (double)args[1];
 
-		Debug.Log("OnRotate, id: " + args[0] + ", angle: " + args[1]);
+
+		Salsa rotatingSalsa = salsas[id].GetComponent<Salsa>();
+
+		rotatingSalsa.Rotate(angle);
 	}
 
 	void OnConnect(Socket socket, Packet packet, params object[] args) {

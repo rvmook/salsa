@@ -51,9 +51,9 @@ io.on('connection', function(socket){
 
 function emitToCanvas(message, params) {
 
+	console.log('emitToCanvas', message, params, Boolean(_canvasSocket));
 	if(_canvasSocket) {
 
-		console.log('emitToCanvas', message, params);
 
 		io.to(_canvasSocket.id).emit.apply(io.to(_canvasSocket.id), [message].concat(params));
 	}
