@@ -2,34 +2,105 @@
 <html>
 <head>
 	<title>Socket.IO chat</title>
-	<style>
-		* { margin: 0; padding: 0; box-sizing: border-box; }
-		body { font: 13px Helvetica, Arial; }
-		form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-		form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-		form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-		#messages { list-style-type: none; margin: 0; padding: 0; }
-		#messages li { padding: 5px 10px; }
-		#messages li:nth-child(odd) { background: #eee; }
-	</style>
 </head>
 <body>
-<ul id="messages"></ul>
-<form action="">
-	<input id="m" autocomplete="off" /><button>Send</button>
-</form>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
-	var socket = io();
-	$('form').submit(function(){
-		socket.emit('chat', $('#m').val());
-		$('#m').val('');
-		return false;
-	});
-	socket.on('chat', function(msg){
-		$('#messages').append($('<li>').text(msg));
-	});
+	var socket = io(),
+		_salsaId;
+
+	// Socket IO
+	socket.on('connect', onConnect);
+	socket.on('connect_error', onConnectError);
+	socket.on('connect_timeout', onConnectTimeout);
+	socket.on('reconnect', onReconnect);
+	socket.on('reconnect_attempt', onReconnectAttempt);
+	socket.on('reconnecting', onReconnecting);
+	socket.on('reconnect_error', onReconnectError);
+	socket.on('reconnect_failed', onReconnectFailed);
+
+	socket.on('salsaConnectedAs', onSalsaConnectedAs);
+
+	window.rotate = function(angle) {
+
+		console.log('rotate', angle);
+		socket.emit('rotate', angle);
+	};
+
+	/**
+	 * Fired upon successful Salsa connection
+	 * @param {String} id
+	 */
+	function onSalsaConnectedAs(id) {
+
+		console.log('onSalsaConnectedAs', id);
+		_salsaId = id;
+	}
+
+	/**
+	 * Fired upon a successful reconnection
+	 * @param {Number} reconnectionAttemptNumber
+	 */
+	function onReconnect(reconnectionAttemptNumber) {
+		console.log('onReconnect - reconnectionAttemptNumber', reconnectionAttemptNumber);
+	}
+
+	/**
+	 * Fired upon an attempt to reconnect
+	 */
+	function onReconnectAttempt() {
+		console.log('onReconnectAttempt');
+	}
+
+	/**
+	 * Fired upon an attempt to reconnect
+	 * @param {Number} reconnectionAttemptNumber
+	 */
+	function onReconnecting(reconnectionAttemptNumber) {
+		console.log('onReconnecting - reconnectionAttemptNumber', reconnectionAttemptNumber);
+	}
+
+	/**
+	 * Fired upon a reconnection attempt error
+	 * @param {Object} error
+	 */
+	function onReconnectError(error) {
+		console.log('onReconnectError - error', error);
+	}
+
+	/**
+	 * Fired when couldn’t reconnect within `reconnectionAttempts`
+	 */
+	function onReconnectFailed() {
+		console.log('onReconnectFailed');
+	}
+
+	/**
+	 * Fired upon a successful connection
+	 */
+	function onConnect() {
+
+		console.log('onConnect');
+		socket.emit('connectSalsa');
+	}
+
+	/**
+	 * Fired upon a connection error
+	 * @param {Object} error
+	 */
+	function onConnectError(error) {
+		console.log('onConnectError - error', error);
+	}
+
+	/**
+	 * Fired upon a connection timeout
+	 */
+	function onConnectTimeout() {
+		console.log('onConnectTimeout');
+	}
+	
+	
 </script>
 </html>
