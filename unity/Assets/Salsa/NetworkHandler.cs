@@ -19,7 +19,8 @@ public class NetworkHandler : MonoBehaviour {
 		
 		Debug.Log("Start");
 
-		manager = new SocketManager(new Uri("http://localhost:3000/socket.io/"));
+//		manager = new SocketManager(new Uri("http://localhost:3000/socket.io/"));
+		manager = new SocketManager(new Uri("http://salsa-env.us-east-1.elasticbeanstalk.com/socket.io/"));
 
 
 		manager.Socket.On("connect", OnConnect);
@@ -52,8 +53,7 @@ public class NetworkHandler : MonoBehaviour {
 	void OnRotate(Socket socket, Packet packet, params object[] args) {
 		
 		String id = (String)args[0];
-		double angle = (double)args[1];
-
+		double angle = Convert.ToDouble(args[1]);
 
 		Salsa rotatingSalsa = salsas[id].GetComponent<Salsa>();
 

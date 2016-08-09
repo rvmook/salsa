@@ -1,13 +1,17 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var counter = 0;
-var connectedSalsas = {};
-var _canvasSocket;
+var port = process.env.PORT || 3000;
 
 app.get('/', function(req, res){
 	res.sendfile('index.html');
 });
+
+
+var io = require('socket.io')(http);
+var counter = 0;
+var connectedSalsas = {};
+var _canvasSocket;
 
 io.on('connection', function(socket){
 
@@ -64,6 +68,6 @@ function getUniqueId() {
 	return String(counter++);
 }
 
-http.listen(3000, function(){
-	console.log('listening on *:3000');
+http.listen(port, function(){
+	console.log('Sample Application Listening on Port ' + port);
 });

@@ -1,13 +1,19 @@
 <!doctype html>
 <html>
 <head>
-	<title>Socket.IO chat</title>
+	<title>Salsa Development 0.0.3</title>
 </head>
 <body>
+<h1>Salsa Development</h1>
+<p>Status:<br><b class="js-status">Disconnected</b></p>
+<form class="js-form">
+	<input type="number" class="js-input"/>
+	<button type="submit">Rotate</button>
+</form>
 </body>
 <script src="/socket.io/socket.io.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
+	var statusEl = document.getElementsByClassName('js-status')[0];
 	var socket = io(),
 		_salsaId;
 
@@ -23,11 +29,6 @@
 
 	socket.on('salsaConnectedAs', onSalsaConnectedAs);
 
-	window.rotate = function(angle) {
-
-		console.log('rotate', angle);
-		socket.emit('rotate', angle);
-	};
 
 	/**
 	 * Fired upon successful Salsa connection
@@ -35,7 +36,7 @@
 	 */
 	function onSalsaConnectedAs(id) {
 
-		console.log('onSalsaConnectedAs', id);
+		updateStatus('onSalsaConnectedAs - ' +  id);
 		_salsaId = id;
 	}
 
@@ -44,14 +45,14 @@
 	 * @param {Number} reconnectionAttemptNumber
 	 */
 	function onReconnect(reconnectionAttemptNumber) {
-		console.log('onReconnect - reconnectionAttemptNumber', reconnectionAttemptNumber);
+		updateStatus('onReconnect - reconnectionAttemptNumber - ' + reconnectionAttemptNumber);
 	}
 
 	/**
 	 * Fired upon an attempt to reconnect
 	 */
 	function onReconnectAttempt() {
-		console.log('onReconnectAttempt');
+		updateStatus('onReconnectAttempt');
 	}
 
 	/**
@@ -59,7 +60,7 @@
 	 * @param {Number} reconnectionAttemptNumber
 	 */
 	function onReconnecting(reconnectionAttemptNumber) {
-		console.log('onReconnecting - reconnectionAttemptNumber', reconnectionAttemptNumber);
+		updateStatus('onReconnecting - reconnectionAttemptNumber - ' + reconnectionAttemptNumber);
 	}
 
 	/**
@@ -67,14 +68,14 @@
 	 * @param {Object} error
 	 */
 	function onReconnectError(error) {
-		console.log('onReconnectError - error', error);
+		updateStatus('onReconnectError - error - ' + JSON.stringify(error));
 	}
 
 	/**
 	 * Fired when couldn’t reconnect within `reconnectionAttempts`
 	 */
 	function onReconnectFailed() {
-		console.log('onReconnectFailed');
+		updateStatus('onReconnectFailed');
 	}
 
 	/**
@@ -82,7 +83,7 @@
 	 */
 	function onConnect() {
 
-		console.log('onConnect');
+		updateStatus('onConnect');
 		socket.emit('connectSalsa');
 	}
 
@@ -91,16 +92,35 @@
 	 * @param {Object} error
 	 */
 	function onConnectError(error) {
-		console.log('onConnectError - error', error);
+		updateStatus('onConnectError - error - ', JSON.stringify(error));
 	}
 
 	/**
 	 * Fired upon a connection timeout
 	 */
 	function onConnectTimeout() {
-		console.log('onConnectTimeout');
+
+		updateStatus('onConnectTimeout');
 	}
-	
-	
+
+
+	var formEl = document.getElementsByClassName('js-form')[0];
+	var inputEl = document.getElementsByClassName('js-input')[0];
+
+	formEl.addEventListener('submit', onSubmit);
+
+	function onSubmit(e) {
+
+		e.preventDefault();
+
+		var angle = inputEl.value;
+
+		socket.emit('rotate', angle);
+	}
+
+	function updateStatus(status) {
+
+		statusEl.innerHTML = status;
+	}
 </script>
 </html>
