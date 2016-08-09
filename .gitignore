@@ -7,7 +7,7 @@ node_modules
 *.sln
 
 unity/Library
-unity/Assets/Best HTTP (Pro)
+unity/Assets/Plugins
 unity/Assets/Standard Assets
 unity/Temp
 unity/ProjectSettings

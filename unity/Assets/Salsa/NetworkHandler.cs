@@ -19,6 +19,7 @@ public class NetworkHandler : MonoBehaviour {
 		
 		Debug.Log("Start");
 
+//		return;
 //		manager = new SocketManager(new Uri("http://localhost:3000/socket.io/"));
 		manager = new SocketManager(new Uri("http://salsa-env.us-east-1.elasticbeanstalk.com/socket.io/"));
 
@@ -26,7 +27,6 @@ public class NetworkHandler : MonoBehaviour {
 		manager.Socket.On("connect", OnConnect);
 		manager.Socket.On("connect_error", OnConnectError);
 		manager.Socket.On("connect_timeout", OnConnectTimeout);
-
 
 		manager.Socket.On("fall", OnFall);
 		manager.Socket.On("rotate", OnRotate);
@@ -39,12 +39,18 @@ public class NetworkHandler : MonoBehaviour {
 
 		Debug.Log("OnNewSalsa, id: " + id);
 
-		GameObject salsa = (GameObject)Instantiate(salsaPrefab, transform.position,Quaternion.identity);
+		AddSalsa(id);
+	}
 
+	void AddSalsa(String id) {
+
+		Debug.Log("AddSalsa, id: " + id);
+
+		GameObject salsa = (GameObject)Instantiate(salsaPrefab, transform.position,Quaternion.identity);
 
 		salsas.Add(id, salsa);
 	}
-	
+
 	void OnFall(Socket socket, Packet packet, params object[] args) {
 
 		Debug.Log("OnFall, id: " + args[0]);
@@ -53,7 +59,7 @@ public class NetworkHandler : MonoBehaviour {
 	void OnRotate(Socket socket, Packet packet, params object[] args) {
 		
 		String id = (String)args[0];
-		double angle = Convert.ToDouble(args[1]);
+		float angle = float.Parse((String)args[1]);
 
 		Salsa rotatingSalsa = salsas[id].GetComponent<Salsa>();
 
