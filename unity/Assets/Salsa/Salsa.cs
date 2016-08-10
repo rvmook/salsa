@@ -4,10 +4,14 @@ using System.Collections;
 public class Salsa : MonoBehaviour {
 
 
-	public Vector3 rotateAmount;  // degrees per second to rotate in each axis. Set in inspector.
+	public float rotationSpeed = 2f;
+	Vector3 fakeAngle;
+	Vector3 toAngle;
+
 	float speed = 1f;
 	bool isGoingLeft;
 	bool isGoingUp;
+	bool isRotating;
 	float angleY = 0f;
 	float minX;
 	float maxX;
@@ -15,6 +19,9 @@ public class Salsa : MonoBehaviour {
 	float maxY;
 
 	void Start() {
+
+		
+		fakeAngle = transform.localEulerAngles;
 
 		Vector3 size = GetComponent<Renderer>().bounds.size;
 
@@ -80,26 +87,44 @@ public class Salsa : MonoBehaviour {
 			isGoingUp = true;			
 		}
 
-//		Quaternion rotation = transform.rotation;
+		if(isRotating) {
 
-//		float rotationY = rotation.y + 20 * Time.deltaTime;
-//		float rotationZ = rotation.z + 10 * Time.deltaTime;
-
-
-		transform.Rotate(new Vector3(
-			1,//rotateAmount.x * Time.deltaTime,
-			0,
-			0//rotateAmount.z * Time.deltaTime
-		),1f);
+			rotateToDest();
+		}
     }
 
-    public void Rotate(float angle) {
+	public void Rotate(float newAngleY) {
 
-		transform.Rotate(new Vector3(
-			0,//rotateAmount.x * Time.deltaTime,
-			1,
-			0//rotateAmount.z * Time.deltaTime
-		),angle);
-    	Debug.Log("Salsa, rotate!" + angle);
+		isRotating = true;
+
+		toAngle = fakeAngle;
+		toAngle.y = newAngleY;
+    }
+
+	void rotateToDest() {
+			
+		if(Vector3.Distance(transform.eulerAngles, toAngle) > 0.01f) {
+
+			fakeAngle = Vector3.Lerp(fakeAngle, toAngle, Time.deltaTime * rotationSpeed);
+
+		} else {
+
+			fakeAngle = toAngle;
+			isRotating = false;
+		}
+
+		transform.eulerAngles = new Vector3(restAngle(fakeAngle.x), restAngle(fakeAngle.y), restAngle(fakeAngle.z));
+    }
+
+    float restAngle(float angle) {
+
+    	if(angle < 0) {
+
+			return 360 + (angle % 360);
+
+    	} else {
+
+			return angle % 360;
+		}
     }
 }

@@ -2,18 +2,39 @@
 <html>
 <head>
 	<title>Salsa Development 0.0.3</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<style>
+
+		body {
+
+			margin: 0;
+		}
+
+		body, html, .wrapper {
+
+			width: 100%;
+			height: 100%;
+		}
+
+		.wrapper {
+
+			padding: 20px;
+			box-sizing: border-box;
+		}
+	</style>
 </head>
 <body>
+<div class="wrapper">
 <h1>Salsa Development</h1>
 <p>Status:<br><b class="js-status">Disconnected</b></p>
-<form class="js-form">
-	<input type="number" class="js-input"/>
-	<button type="submit">Rotate</button>
-</form>
+<p>Rotation:<br><b class="js-rotation">0</b></p>
+</div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
+<script src="http://hammerjs.github.io/dist/hammer.min.js"></script>
 <script>
 	var statusEl = document.getElementsByClassName('js-status')[0];
+	var rotationEl = document.getElementsByClassName('js-rotation')[0];
 	var socket = io(),
 		_salsaId;
 
@@ -103,24 +124,46 @@
 		updateStatus('onConnectTimeout');
 	}
 
+	var currentAngle = 0,
+		initialAngle;
 
-	var formEl = document.getElementsByClassName('js-form')[0];
-	var inputEl = document.getElementsByClassName('js-input')[0];
-
-	formEl.addEventListener('submit', onSubmit);
-
-	function onSubmit(e) {
-
-		e.preventDefault();
-
-		var angle = inputEl.value;
-
-		socket.emit('rotate', angle);
-	}
 
 	function updateStatus(status) {
 
 		statusEl.innerHTML = status;
+	}
+
+	var hammertime = new Hammer(document.getElementsByClassName('wrapper')[0], {});
+
+
+	hammertime.on('panstart', function(ev) {
+
+		initialAngle = currentAngle;
+	});
+
+	hammertime.on('pan', function(ev) {
+
+		currentAngle = roundToTen(initialAngle - Math.round(ev.deltaX*0.1));
+
+		var displayAngle;
+
+		if(currentAngle < 0) {
+
+			displayAngle = 360 + (currentAngle % 360);
+
+		} else {
+
+			displayAngle = currentAngle % 360;
+		}
+
+		rotationEl.innerHTML = displayAngle;
+
+		socket.emit('rotate', currentAngle);
+	});
+
+	function roundToTen(value) {
+
+		return Math.round(value / 10) * 10;
 	}
 </script>
 </html>

@@ -16,8 +16,9 @@ public class NetworkHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		
+
 		Debug.Log("Start");
+
 
 //		return;
 //		manager = new SocketManager(new Uri("http://localhost:3000/socket.io/"));
@@ -57,13 +58,16 @@ public class NetworkHandler : MonoBehaviour {
 	}
 
 	void OnRotate(Socket socket, Packet packet, params object[] args) {
-		
+
 		String id = (String)args[0];
-		float angle = float.Parse((String)args[1]);
+		double angle = (double)args[1];
+
+
+
 
 		Salsa rotatingSalsa = salsas[id].GetComponent<Salsa>();
 
-		rotatingSalsa.Rotate(angle);
+		rotatingSalsa.Rotate((float)angle);
 	}
 
 	void OnConnect(Socket socket, Packet packet, params object[] args) {
