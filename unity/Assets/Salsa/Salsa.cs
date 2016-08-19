@@ -4,15 +4,16 @@ using System.Collections;
 public class Salsa : MonoBehaviour {
 
 
-	public float rotationSpeed = 2f;
-	Vector3 fakeAngle;
-	Vector3 toAngle;
+	public float rotationSpeed = 20f;
+	private Vector3 mousePosition;
 
-	float speed = 1f;
-	bool isGoingLeft;
-	bool isGoingUp;
-	bool isRotating;
-	float angleY = 0f;
+	Transform rotationLocal;
+
+	Vector3 toAngle;
+	Rigidbody rb;
+	public float speed = 10f;
+	bool isFalling = false;
+	float destAngleY = 0f;
 	float minX;
 	float maxX;
 	float minY;
@@ -20,10 +21,15 @@ public class Salsa : MonoBehaviour {
 
 	void Start() {
 
-		
-		fakeAngle = transform.localEulerAngles;
+		rotationLocal = transform.Find("RotationLocal");
 
-		Vector3 size = GetComponent<Renderer>().bounds.size;
+		rb = GetComponent<Rigidbody>();
+//		rb.velocity = new Vector3(1f, 1f, 0);
+
+		prevLoc = transform.position;
+
+
+		Vector3 size = GetComponentInChildren<Renderer>().bounds.size;
 
 		float halfWidth = size.x/2;
 		float halfHeight = size.y/2;
@@ -34,86 +40,37 @@ public class Salsa : MonoBehaviour {
 
 		minY = Camera.main.ViewportToWorldPoint(new Vector3(0,0,zDistance)).y + halfHeight;
 		maxY = Camera.main.ViewportToWorldPoint(new Vector3(0,1,zDistance)).y - halfHeight;
+
+
+
 	}
+
+	private Vector3 curLoc;
+     private Vector3 prevLoc;
 
     // Update is called once per frame
     void Update () {  
 
-		Vector2 offsetPos = new Vector2();
-		float posX;
-		float posY;
+		if(!isFalling) {
 
+			Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			mousePos.z = transform.position.z;
+
+			Quaternion pointTo = Quaternion.LookRotation(Vector3.forward, mousePos - transform.position);
+
+			transform.rotation = Quaternion.Lerp(transform.rotation, pointTo, Time.deltaTime * 2f);
+
+
+			transform.position += transform.up * Time.deltaTime * speed;
+
+			rotationLocal.localEulerAngles = new Vector3(0, destAngleY, 0);
 		
-		
-		if(isGoingLeft) {
-			
-			offsetPos.x = -speed;
-			
-		} else {
-			
-			offsetPos.x = speed;
-		}
-
-		if(isGoingUp) {
-			
-			offsetPos.y = -speed;
-			
-		} else {
-			
-			offsetPos.y = speed;
-		}
-
-		posX = Mathf.Clamp(transform.position.x + (offsetPos.x * Time.deltaTime), minX, maxX);
-		posY = Mathf.Clamp(transform.position.y + (offsetPos.y * Time.deltaTime), minY, maxY);
-		
-		transform.position = new Vector2(posX, posY);
-
-		
-		if(posX <= minX) {
-
-			isGoingLeft = false;			
-
-		} else if(posX >= maxX) {
-		
-			isGoingLeft = true;			
-		}
-
-		if(posY <= minY) {
-
-			isGoingUp = false;			
-
-		} else if(posY >= maxY) {
-		
-			isGoingUp = true;			
-		}
-
-		if(isRotating) {
-
-			rotateToDest();
 		}
     }
 
 	public void Rotate(float newAngleY) {
 
-		isRotating = true;
-
-		toAngle = fakeAngle;
-		toAngle.y = newAngleY;
-    }
-
-	void rotateToDest() {
-			
-		if(Vector3.Distance(transform.eulerAngles, toAngle) > 0.01f) {
-
-			fakeAngle = Vector3.Lerp(fakeAngle, toAngle, Time.deltaTime * rotationSpeed);
-
-		} else {
-
-			fakeAngle = toAngle;
-			isRotating = false;
-		}
-
-		transform.eulerAngles = new Vector3(restAngle(fakeAngle.x), restAngle(fakeAngle.y), restAngle(fakeAngle.z));
+		destAngleY = restAngle(newAngleY);
     }
 
     float restAngle(float angle) {
@@ -127,4 +84,10 @@ public class Salsa : MonoBehaviour {
 			return angle % 360;
 		}
     }
+
+	public void fall() {
+
+		isFalling = true;
+		rb.useGravity = true;
+	}
 }

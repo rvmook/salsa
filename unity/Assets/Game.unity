@@ -147,7 +147,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 455239269}
   m_LocalRotation: {x: 0.4261251, y: -0.23227192, z: 0.114179865, w: 0.86685073}
-  m_LocalPosition: {x: -9, y: 5.9, z: -10.92}
+  m_LocalPosition: {x: 6.47, y: 10.37, z: -37.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_LocalEulerAnglesHint: {x: 52.347004, y: -30.016, z: 0}
   m_Children: []
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 748963088062e480ea7282a1211f08e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  salsaPrefab: {fileID: 1000013746363286, guid: 116025b6a6d564bbf842133fd0815fe9,
+  salsaPrefab: {fileID: 1000012643473842, guid: 116025b6a6d564bbf842133fd0815fe9,
     type: 2}
 --- !u!4 &556139244
 Transform:
