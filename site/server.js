@@ -6,7 +6,7 @@ var port = process.env.PORT || 3000;
 app.get('/', function(req, res){
 	res.sendfile('index.html');
 });
-
+app.use(express.static('public'));
 
 var io = require('socket.io')(http);
 var counter = 0;

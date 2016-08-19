@@ -8,6 +8,7 @@
 		body {
 
 			margin: 0;
+			background-color: #99d5d6;
 		}
 
 		body, html, .wrapper {
@@ -20,14 +21,33 @@
 
 			padding: 20px;
 			box-sizing: border-box;
+
+		}
+
+		.salsa {
+
+			width: 90%;
+			max-width: 378px;
+			height: auto;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+
+			-webkit-transform: translate(-50%, -50%);
+			-webkit-transition: -webkit-transform 150ms cubic-bezier(0.215, 0.610, 0.355, 1.000);
+			transform: translate(-50%, -50%);
+			transition: transform 150ms cubic-bezier(0.215, 0.610, 0.355, 1.000);
+
+			pointer-events: none;
 		}
 	</style>
 </head>
 <body>
 <div class="wrapper">
-<h1>Salsa Development</h1>
-<p>Status:<br><b class="js-status">Disconnected</b></p>
-<p>Rotation:<br><b class="js-rotation">0</b></p>
+	<img src="assets/salsa.png" class="salsa" width="756" height="576"/>
+<!--<h1>Salsa Development</h1>-->
+<!--<p>Status:<br><b class="js-status">Disconnected</b></p>-->
+<!--<p>Rotation:<br><b class="js-rotation">0</b></p>-->
 </div>
 </body>
 <script src="/socket.io/socket.io.js"></script>
@@ -130,7 +150,7 @@
 
 	function updateStatus(status) {
 
-		statusEl.innerHTML = status;
+//		statusEl.innerHTML = status;
 	}
 
 	var hammertime = new Hammer(document.getElementsByClassName('wrapper')[0], {});
@@ -141,9 +161,11 @@
 		initialAngle = currentAngle;
 	});
 
+	var salsaEl = document.querySelector('.salsa');
+
 	hammertime.on('pan', function(ev) {
 
-		currentAngle = roundToTen(initialAngle - Math.round(ev.deltaX*0.1));
+		currentAngle = roundToTen(initialAngle - Math.round(ev.deltaX*0.2));
 
 		var displayAngle;
 
@@ -156,7 +178,9 @@
 			displayAngle = currentAngle % 360;
 		}
 
-		rotationEl.innerHTML = displayAngle;
+//		rotationEl.innerHTML = displayAngle;
+
+		salsaEl.style.transform = 'translate(-50%, -50%) rotate(' + currentAngle + 'deg)';
 
 		socket.emit('rotate', currentAngle);
 	});
