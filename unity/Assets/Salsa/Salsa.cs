@@ -11,6 +11,12 @@ public class Salsa : MonoBehaviour {
 
 	Vector3 toAngle;
 	Rigidbody rb;
+	Renderer renderer;
+
+
+	bool isWrappingX = false;
+	bool isWrappingY = false;
+
 	public float speed = 10f;
 	bool isFalling = false;
 	float destAngleY = 0f;
@@ -22,6 +28,7 @@ public class Salsa : MonoBehaviour {
 	void Start() {
 
 		rotationLocal = transform.Find("RotationLocal");
+		renderer = GetComponentInChildren<Renderer>();
 
 		rb = GetComponent<Rigidbody>();
 //		rb.velocity = new Vector3(1f, 1f, 0);
@@ -29,7 +36,7 @@ public class Salsa : MonoBehaviour {
 		prevLoc = transform.position;
 
 
-		Vector3 size = GetComponentInChildren<Renderer>().bounds.size;
+		Vector3 size = renderer.bounds.size;
 
 		float halfWidth = size.x/2;
 		float halfHeight = size.y/2;
@@ -64,7 +71,8 @@ public class Salsa : MonoBehaviour {
 			transform.position += transform.up * Time.deltaTime * speed;
 
 			rotationLocal.localEulerAngles = new Vector3(0, destAngleY, 0);
-		
+
+			ScreenWrap();
 		}
     }
 
@@ -89,5 +97,39 @@ public class Salsa : MonoBehaviour {
 
 		isFalling = true;
 		rb.useGravity = true;
+	}
+
+	void ScreenWrap() {
+
+		bool isVisible = renderer.isVisible;
+	 
+	    if(isVisible)
+	    {
+	        isWrappingX = false;
+	        isWrappingY = false;
+	        return;
+	    }
+	 
+	    if(isWrappingX && isWrappingY) {
+	        return;
+	    }
+	 
+	    var cam = Camera.main;
+	    var viewportPosition = cam.WorldToViewportPoint(transform.position);
+	    var newPosition = transform.position;
+	 
+	    if (!isWrappingX && (viewportPosition.x > 1 || viewportPosition.x < 0)) {
+	        newPosition.x = -newPosition.x;
+	 
+	        isWrappingX = true;
+	    }
+	 
+	    if (!isWrappingY && (viewportPosition.y > 1 || viewportPosition.y < 0)) {
+	        newPosition.y = -newPosition.y;
+	 
+	        isWrappingY = true;
+	    }
+	 
+	    transform.position = newPosition;
 	}
 }
