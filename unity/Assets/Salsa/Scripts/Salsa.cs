@@ -27,7 +27,7 @@ public class Salsa : MonoBehaviour {
 
 	void Start() {
 
-		rotationLocal = transform.Find("RotationLocal");
+		rotationLocal = transform.Find("SalsaModel");
 		renderer = GetComponentInChildren<Renderer>();
 
 		rb = GetComponent<Rigidbody>();

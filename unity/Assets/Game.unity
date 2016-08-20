@@ -312,7 +312,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 748963088062e480ea7282a1211f08e5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  salsaPrefab: {fileID: 1000012643473842, guid: 116025b6a6d564bbf842133fd0815fe9,
+  salsaPrefab: {fileID: 1000012011716450, guid: eca0e463aa96c4db88b5975f11a09631,
     type: 2}
 --- !u!4 &556139244
 Transform:
