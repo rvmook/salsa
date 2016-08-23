@@ -5,5 +5,32 @@
   "dependencies": {
     "express": "4.10.2",
     "socket.io": "1.4.8"
+  },
+  "devDependencies": {
+    "autoprefixer": "6.3.6",
+    "browser-sync": "2.13.0",
+    "browserify": "13.0.1",
+    "css-mqpacker": "5.0.1",
+    "del": "2.2.1",
+    "gulp": "3.9.1",
+    "gulp-autoprefixer": "3.1.0",
+    "gulp-compile-handlebars": "0.6.1",
+    "gulp-eslint": "2.0.0",
+    "gulp-htmlmin": "2.0.0",
+    "gulp-if": "2.0.1",
+    "gulp-notify": "2.2.0",
+    "gulp-postcss": "6.1.1",
+    "gulp-rename": "1.2.2",
+    "gulp-rev-all": "0.8.24",
+    "gulp-rev-delete-original": "0.1.0",
+    "gulp-sass": "2.3.2",
+    "gulp-streamify": "1.0.2",
+    "gulp-svg-symbols": "1.0.0",
+    "gulp-uglify": "1.5.3",
+    "postcss-merge-rules": "2.0.9",
+    "run-sequence": "1.2.2",
+    "vinyl-buffer": "1.0.0",
+    "vinyl-source-stream": "1.1.0",
+    "yargs": "4.7.1"
   }
 }

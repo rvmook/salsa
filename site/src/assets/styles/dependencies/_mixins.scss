@@ -1,0 +1,58 @@
+// Media Queries
+//--------------------------------------------------------------------------
+
+
+@mixin q-is-extra-large {
+
+	@media (min-width: $number-extra-wide) {
+
+		@content;
+	}
+}
+
+@mixin q-is-large {
+
+	@media (min-width: $number-wide) {
+
+		@content;
+	}
+}
+
+@mixin q-is-medium {
+
+	@media (min-width: $number-medium) {
+
+		@content;
+	}
+}
+
+@mixin q-is-small {
+
+	@media (min-width: $number-small) {
+
+		@content;
+	}
+}
+
+
+
+// Helpers
+//--------------------------------------------------------------------------
+
+
+@mixin clamp-calc-value($property, $min-size, $max-size, $lower-range: $number-min-width, $upper-range: $number-max-width, $custom-min-size:$min-size, $custom-max-size:$max-size) {
+
+	$diff-size: strip-unit($max-size - $min-size);
+	$diff-range: strip-unit($upper-range - $lower-range);
+	#{$property}: calc(#{$min-size} + #{$diff-size} * ((100vw - #{$lower-range}) / #{$diff-range}));
+
+	@media screen and (max-width: $lower-range) {
+
+		#{$property}: $custom-min-size;
+	}
+
+	@media screen and (min-width: $upper-range) {
+
+		#{$property}: $custom-max-size;
+	}
+}

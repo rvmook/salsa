@@ -1,0 +1,34 @@
+// Colors
+//--------------------------------------------------------------------------
+
+
+// To limit too many similar colors names are based on Name That Color
+// http://chir.ag/projects/name-that-color/
+$color-white: #fff;
+$color-black: #000;
+
+
+// z-index
+//--------------------------------------------------------------------------
+
+
+// To more easily manage our z-indexes we're defining them one by one.
+
+
+
+// Magic Numbers
+//--------------------------------------------------------------------------
+
+
+// min and max browser widths
+$number-min-width: 320px;
+$number-max-width: 1600px;
+
+$number-max-form-width: 400px;
+
+// media query break-points
+$number-extra-wide: 1280px;
+$number-wide: 1024px;
+$number-medium: 760px;
+$number-small: 425px;
+$number-extra-small: 320px;
