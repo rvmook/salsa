@@ -8,7 +8,7 @@ module.exports = function(taskName) {
 		gulp.task(taskName, function(callback) {
 			runSequence('clean',
 				['copyAssets', 'copyScripts', 'styles', 'browserify', 'hbs'],
-				'rev',
+				// 'rev',
 				callback);
 		});
 

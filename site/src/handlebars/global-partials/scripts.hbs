@@ -1,3 +1,12 @@
+{{#unless isProd}}
+	<script src="/assets/scripts/three.min.js"></script>
+	<script src="/assets/scripts/main.js"></script>
+	<link href="/assets/styles/main.css" type="text/css" rel="stylesheet" />
+	<script>
+		window.init();
+	</script>
+{{/unless}}
+{{#if isProd}}
 <script>
 
 	(function(win, doc){
@@ -6,36 +15,33 @@
 		win.init = function(){ win.isReady = true; };
 
 		var MOBILE_ASSET = 'mobile',
-			assetFile = getAssetFile(),
 			hasLocalStorage = 'localStorage' in win && win['localStorage'] !== null,
 			localStrg,
-			{{#unless isProd}}timeStamp = '?dev=' + Date.now(),{{/unless}}
-			jsFile = '/assets/scripts/' + assetFile + '.js'{{#unless isProd}} + timeStamp {{/unless}},
+			jsFile = '/assets/scripts/main.js',
 			JS_FILE = 'JS_FILE',
 			JS_DATA = 'JS_DATA',
 
-			pixiFile = '/assets/scripts/three.min.js'{{#unless isProd}} + timeStamp {{/unless}},
+			threeFile = '/assets/scripts/three.min.js',
 			THREE_FILE = 'THREE_FILE',
 			THREE_DATA = 'THREE_DATA',
 
-			cssFile = '/assets/styles/' + assetFile + '.css'{{#unless isProd}} + timeStamp {{/unless}},
+			cssFile = '/assets/styles/main.css',
 			CLASS_INLINE_CSS = 'js-inlineStyle',
 			CSS_FILE = 'CSS_FILE',
 			CSS_DATA = 'CSS_DATA';
 
 
-		loadFile(pixiFile, THREE_FILE, THREE_DATA, 'script', function(){
+		loadFile(threeFile, THREE_FILE, THREE_DATA, 'script', function(){
 			loadFile(jsFile, JS_FILE, JS_DATA, 'script', function(){
 				loadFile(cssFile, CSS_FILE, CSS_DATA, 'style', win.init);
 			});
 		});
 
-
 		function loadFile(url, keyFile, keyData, tagName, callback) {
 
 			callback = callback || function(){};
 
-			if(assetFile === MOBILE_ASSET && url === pixiFile) {
+			if(assetFile === MOBILE_ASSET && url === threeFile) {
 
 				callback();
 				
@@ -70,34 +76,7 @@
 						localStrg.setItem(keyData, response);
 					}
 
-					{{!-- Scripts are loaded through <script> tag in development for sourcemap support. --}}
-					{{#if isProd}}
-
-						handleFile(tagName, response);
-
-
-					{{else}}
-
-						if(tagName === 'script') {
-
-							addScriptTag(url);
-
-						} else {
-
-							handleFile(tagName, response);
-						}
-
-						function addScriptTag(src) {
-
-							var scriptEl = doc.createElement('script');
-
-							scriptEl.setAttribute('src', src);
-
-							doc.body.appendChild(scriptEl);
-						}
-
-					{{/if}}
-
+					handleFile(tagName, response);
 
 					callback();
 				});
@@ -126,7 +105,9 @@
 		}
 
 		function loadUrl(url, callback) {
+
 			var request = new XMLHttpRequest();
+
 			request.open('GET', url, true);
 			request.onreadystatechange = function () {
 
@@ -141,18 +122,7 @@
 			};
 			request.send();
 		}
-
-		function getAssetFile() {
-
-			if(win.matchMedia && win.matchMedia('(max-device-width:1024px)').matches) {
-
-				return MOBILE_ASSET;
-
-			} else {
-
-				return 'desktop';
-			}
-		}
 	})(window, document);
 
 </script>
+{{/if}}

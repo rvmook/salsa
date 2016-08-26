@@ -1,6 +1,4 @@
-var fs = require('fs'),
-	path = require('path'),
-	config = require('../config'),
+var config = require('../config'),
 	handlebarsTask = require('../util/handlebarsTask'),
 	gulp = require('gulp');
 
