@@ -1,18 +1,15 @@
-var _wrapperEl,
+var TOTAL_ASSETS = 2,
+	_wrapperEl,
 	_camera,
 	_ambient,
 	_scene,
 	_renderer,
 	_salsa,
-	_directionalLight,
 	_rotationRadians = 3.14159,
 	_canvasWidth,
 	_canvasHeight;
 
 function init() {
-
-	var loadingManager,
-		texture;
 
 	_wrapperEl = document.querySelector('.wrapper');
 
@@ -28,45 +25,42 @@ function init() {
 	_scene.background = new THREE.Color(0x99D5D6);
 
 	// lights
-	_ambient = new THREE.AmbientLight(0x101030);
+	_ambient = new THREE.AmbientLight(0xffffff);
 	_scene.add(_ambient);
 
-	_directionalLight = new THREE.DirectionalLight(0xffeedd);
-	_scene.add(_directionalLight);
-	_directionalLight.position.set(0, 0, 1);
 
 	_renderer = new THREE.WebGLRenderer();
 	_renderer.setPixelRatio(window.devicePixelRatio);
 	_renderer.setSize(_canvasWidth, _canvasHeight);
+	_renderer.render(_scene, _camera);
+
 	_wrapperEl.appendChild(_renderer.domElement);
+}
 
+function preload(progress, loaded) {
 
+	var loadingManager = new THREE.LoadingManager(),
+		imageLoader = new THREE.ImageLoader(loadingManager),
+		objLoader = new THREE.OBJLoader(loadingManager),
+		texture = new THREE.Texture(),
+		imageProgress = 0,
+		objProgress = 0;
 
-	// texture
+	loadingManager.onLoad = loaded;
 
-	loadingManager = new THREE.LoadingManager();
-	loadingManager.onProgress = function(item, loaded, total) {
+	objLoader.load( '/assets/3d/obj/SalsaModel.obj', onModelLoaded, onModelProgress);
+	imageLoader.load( '/assets/3d/textures/SalsaTexture.jpg', onTextureLoaded, onImgProgress);
 
-		console.log(item, loaded, total);
+	function onImgProgress(xhr) { imageProgress = getProgress(xhr); updateTotalProgress(); }
+	function onModelProgress(xhr) { objProgress = getProgress(xhr); updateTotalProgress(); }
+	function getProgress(xhr) { return xhr.loaded / xhr.total / TOTAL_ASSETS; }
 
-		if(loaded === total) {
+	function updateTotalProgress() {
 
-			document.addEventListener('mousemove', onDocumentMouseMove, false);
-			window.addEventListener('resize', onWindowResize, false);
-			render();
-		}
-	};
+		var totalProgress = objProgress + imageProgress;
 
-	texture = new THREE.Texture();
-
-	new THREE.ImageLoader(loadingManager)
-		.load( '/assets/3d/textures/SalsaTexture.jpg', onTextureLoaded);
-	new THREE.OBJLoader(loadingManager)
-		.load( '/assets/3d/obj/SalsaModel.obj', onModelLoaded);
-
-
-	// model.setMaterials(materials);
-
+		progress(totalProgress);
+	}
 
 	function onTextureLoaded(image) {
 
@@ -76,21 +70,36 @@ function init() {
 
 	function onModelLoaded(model) {
 
-		model.traverse( function ( child ) {
+		model.traverse(function(child) {
 
-			if ( child instanceof THREE.Mesh ) {
+			if (child instanceof THREE.Mesh) {
 
 				child.material.map = texture;
 			}
-		} );
+		});
 
 		model.position.y = -50;
-
 		model.scale.set(20,20,20);
-		_scene.add(model);
-
 		_salsa = model;
 	}
+}
+
+function render() {
+
+	_salsa.rotation.set(0, _rotationRadians, 0);
+	_camera.lookAt(_scene.position);
+
+	_renderer.render(_scene, _camera);
+
+	requestAnimationFrame(render);
+}
+
+function start() {
+
+	_scene.add(_salsa);
+	document.addEventListener('mousemove', onDocumentMouseMove, false);
+	window.addEventListener('resize', onWindowResize, false);
+	render();
 }
 
 function onWindowResize() {
@@ -111,21 +120,9 @@ function onDocumentMouseMove( event ) {
 	_rotationRadians = rotationDeg * (Math.PI/180);
 }
 
-//
-
-function render() {
-
-	// _camera.position.x += ( mouseX - _camera.position.x ) * .05;
-	// _camera.position.y += ( - mouseY - _camera.position.y ) * .05;
-
-	_salsa.rotation.set(0, _rotationRadians, 0);
-
-	_camera.lookAt(_scene.position);
-
-
-	_renderer.render(_scene, _camera);
-
-	requestAnimationFrame(render);
-}
-
 exports.init = init;
+exports.preload = preload;
+exports.start = start;
+
+
+
