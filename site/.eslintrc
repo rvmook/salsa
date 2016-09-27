@@ -7,18 +7,7 @@
     "browser": 1
   },
   "globals": {
-    "PIXI": true,
-    "FB": true,
-    "auth2": true,
-    "gapi": true,
-    "TweenLite": true,
-    "TimelineLite": true,
-    "Cubic": true,
-	"RoughEase": true,
-	"Power0": true,
-	"Power1": true,
-	"Power2": true,
-	"Power4": true
+    "THREE": true
   },
   "rules": {
 

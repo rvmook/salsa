@@ -6,6 +6,8 @@ node_modules
 *.csproj
 *.sln
 
+site/public
+
 unity/Library
 unity/Assets/Plugins
 unity/Assets/Standard Assets

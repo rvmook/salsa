@@ -1,7 +1,7 @@
 exports.browserify = {
 	watch: ['./src/assets/scripts/**'],
 	entryPath: './src/assets/scripts/',
-	bundles: ['mobile.js', 'desktop.js'],
+	bundles: ['main.js'],
 	dest: 'public/assets/scripts'
 };
 
