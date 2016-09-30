@@ -23,7 +23,19 @@ html, body {
 
 body {
 
-	background-color: #99D5D6;
 	border: 20px solid #fff;
 	box-sizing: border-box;
+}
+
+.preloader {
+
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	width: calc(100% - 40px);
+	height: calc(100% - 40px);
+	background-color: #99D5D6;
+	transform: scaleY(0);
+	transform-origin: bottom;
+	will-change: transform;
 }

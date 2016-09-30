@@ -1,5 +1,6 @@
 var threeHandler = require('./threeHandler'),
-	FAKE_TIME = 1;
+	preloaderEl = document.querySelector('.preloader'),
+	FAKE_TIME = 3;
 
 function preload(callback) {
 
@@ -34,8 +35,11 @@ function preload(callback) {
 
 			displayProgress = newDisplayProgress;
 
+			preloaderEl.style.transform = 'scaleY(' + displayProgress + ')';
+
 			if(displayProgress === 1) {
 
+				preloaderEl.parentNode.removeChild(preloaderEl);
 				callback();
 			}
 		}

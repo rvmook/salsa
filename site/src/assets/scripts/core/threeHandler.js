@@ -22,7 +22,7 @@ function init() {
 
 	// _scene
 	_scene = new THREE.Scene();
-	_scene.background = new THREE.Color(0x99D5D6);
+	_scene.background = new THREE.Color(0xffffff);
 
 	// lights
 	_ambient = new THREE.AmbientLight(0xffffff);
@@ -95,7 +95,7 @@ function render() {
 }
 
 function start() {
-
+	_scene.background = new THREE.Color(0x99D5D6);
 	_scene.add(_salsa);
 	document.addEventListener('mousemove', onDocumentMouseMove, false);
 	window.addEventListener('resize', onWindowResize, false);

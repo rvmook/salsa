@@ -12,10 +12,8 @@ function init() {
 
 
 	var threeHandler = require('./core/threeHandler');
-
-	removeObsoleteStyles();
-
 	threeHandler.init();
+	removeObsoleteStyles();
 
 	preloader.load(function(){
 
