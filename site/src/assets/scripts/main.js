@@ -1,5 +1,7 @@
 require('./libs/OBJLoader');
-var preloader = require('./core/preloader');
+var preloader = require('./core/preloader'),
+	socketHandler = require('./core/socketHandler');
+
 
 if(window.isReady) {
 	init();
@@ -12,6 +14,7 @@ function init() {
 
 
 	var threeHandler = require('./core/threeHandler');
+	socketHandler.init();
 	threeHandler.init();
 	removeObsoleteStyles();
 

@@ -1,5 +1,7 @@
-var TOTAL_ASSETS = 2,
+var socket = require('./socketHandler').socket,
+	TOTAL_ASSETS = 2,
 	_wrapperEl,
+	_currentRotation,
 	_camera,
 	_ambient,
 	_scene,
@@ -115,9 +117,21 @@ function onWindowResize() {
 
 function onDocumentMouseMove( event ) {
 
-	var rotationDeg = 360 * (event.clientX / _canvasWidth);
+	var newRotationDeg = roundTo(360 * (event.clientX / window.innerWidth), 1);
 
-	_rotationRadians = rotationDeg * (Math.PI/180);
+	if(_currentRotation !== newRotationDeg) {
+
+		_currentRotation = newRotationDeg;
+		_rotationRadians = _currentRotation * (Math.PI/180);
+
+		socket.emit('rotate', _currentRotation);
+	}
+
+}
+
+function roundTo(value, round) {
+
+	return Math.round(value / round) * round;
 }
 
 exports.init = init;
