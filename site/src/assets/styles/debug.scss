@@ -1,0 +1,10 @@
+// Making sure we have all are dependencies so we don't have to include them in every file.
+@import "dependencies/variables";
+@import "dependencies/functions";
+@import "dependencies/mixins";
+
+// core
+@import "core/reset";
+@import "core/global";
+
+@import "shame";

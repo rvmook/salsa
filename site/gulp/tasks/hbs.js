@@ -4,17 +4,32 @@ var config = require('../config'),
 
 module.exports = function(taskName) {
 
-	gulp.task(taskName, function(){
+	var tasks = [];
 
-		return handlebarsTask({
-			src: config.hbs.basePath + '/index.hbs',
-			dataRequire:config.hbs.dataRequire,
-			data: {
-				isProd: global.isProd
-			},
-			partials: config.hbs.partials,
-			dist: config.hbs.dist,
-			minifyHTML: config.hbs.minifyHTML
-		})
-	});
+	tasks.push(createTask('index', config.hbs.basePath + '/index.hbs', config.hbs.dist));
+	tasks.push(createTask('debug', config.hbs.basePath + '/debug.hbs', config.hbs.dist));
+
+	gulp.task(taskName, tasks);
+
+
+	function createTask(subName, src, dist) {
+
+		var subTaskName = taskName + '--' + subName;
+
+		gulp.task(subTaskName, function(){
+
+			return handlebarsTask({
+				src: src,
+				dataRequire:config.hbs.dataRequire,
+				data: {
+					isProd: global.isProd
+				},
+				partials: config.hbs.partials,
+				dist: dist,
+				minifyHTML: config.hbs.minifyHTML
+			})
+		});
+
+		return subTaskName;
+	}
 };
