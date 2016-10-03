@@ -1,10 +1,13 @@
 var threeHandler = require('./threeHandler'),
+	socketHandler = require('./socketHandler'),
+	Q = require('../libs/kew'),
 	preloaderEl = document.querySelector('.preloader'),
 	FAKE_TIME = 3;
 
-function preload(callback) {
+function preload() {
 
-	var fakeProgress = {p:0},
+	var deferred = Q.defer(),
+		fakeProgress = {p:0},
 		realProgress = {p:0},
 		displayProgress = 0;
 
@@ -27,6 +30,8 @@ function preload(callback) {
 		updateDisplayProgress();
 	}
 
+	return deferred.promise;
+
 	function updateDisplayProgress() {
 
 		var newDisplayProgress = Math.min(realProgress.p, fakeProgress.p);
@@ -40,7 +45,7 @@ function preload(callback) {
 			if(displayProgress === 1) {
 
 				preloaderEl.parentNode.removeChild(preloaderEl);
-				callback();
+				deferred.resolve();
 			}
 		}
 	}

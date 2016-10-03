@@ -1,16 +1,33 @@
 require('./libs/OBJLoader');
 var preloader = require('./core/preloader'),
+	Q = require('./libs/kew'),
 	socketHandler = require('./core/socketHandler');
 
 var threeHandler = require('./core/threeHandler');
-socketHandler.init();
+
 threeHandler.init();
 removeObsoleteStyles();
+Q.all([
+	preloader.load(),
+	setupSocket()
+]).then(threeHandler.start)
+	.fail(function(e){
+		console.error(e);
+	});
 
-preloader.load(function(){
 
-	threeHandler.start();
-});
+function setupSocket() {
+
+	console.log('setupSocket');
+
+	return socketHandler.init()
+		.then(socketHandler.connectSalsa)
+		.then(function(salsaId){
+			console.log('connected as', salsaId);
+		})
+}
+
+
 
 function removeObsoleteStyles() {
 

@@ -2,6 +2,7 @@ var socket = io(),
 	Q = require('../libs/kew'),
 	TIMEOUT_DURATION = 5000;
 
+exports.socket = socket;
 exports.init = function() {
 
 	var deferred = Q.defer();

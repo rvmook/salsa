@@ -6,22 +6,19 @@ var port = process.env.PORT || 3000;
 app.use(express.static('public'));
 
 var io = require('socket.io')(http);
-var counter = 0;
 var connectedSalsas = {};
-var _canvasSocket;
+var _canvasSockets = {};
 
 io.on('connection', function(socket){
 
 	socket.on('connectCanvas', function(){
 
-		_canvasSocket = socket;
-
-		console.log('connectCanvas');
-		emitToCanvas('canvasConnected', connectedSalsas);
+		_canvasSockets[socket.id] = socket;
+		io.to(socket.id).emit('canvasConnected', connectedSalsas);
 
 		socket.on('disconnect', function(){
 
-			_canvasSocket = false;
+			delete _canvasSockets[socket.id];
 		});
 	});
 
@@ -29,10 +26,10 @@ io.on('connection', function(socket){
 
 		console.log('connectSalsa');
 
-		var id = getUniqueId();
+		var id = socket.id;
 		connectedSalsas[id] = {id:id};
 
-		io.to(socket.id).emit('salsaConnectedAs', id);
+		io.to(id).emit('salsaConnectedAs', id);
 		emitToCanvas('newSalsa', [id]);
 		socket.on('disconnect', function(){
 
@@ -53,18 +50,20 @@ io.on('connection', function(socket){
 
 function emitToCanvas(message, params) {
 
-	console.log('emitToCanvas', message, params, Boolean(_canvasSocket));
-	if(_canvasSocket) {
+	var key;
 
+	console.log('emitToCanvas', message, params);
 
-		io.to(_canvasSocket.id).emit.apply(io.to(_canvasSocket.id), [message].concat(params));
+	for(key in _canvasSockets) {
+
+		console.log('key', key);
+		if(_canvasSockets.hasOwnProperty(key)) {
+
+			io.to(key).emit.apply(io.to(key), [message].concat(params));
+		}
 	}
 }
 
-function getUniqueId() {
-
-	return String(counter++);
-}
 
 http.listen(port, function(){
 	console.log('Sample Application Listening on Port ' + port);
