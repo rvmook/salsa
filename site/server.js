@@ -14,9 +14,10 @@ io.on('connection', function(socket){
 
 	socket.on('connectCanvas', function(){
 
-		console.log('connectCanvas');
-
 		_canvasSocket = socket;
+
+		console.log('connectCanvas');
+		emitToCanvas('canvasConnected', connectedSalsas);
 
 		socket.on('disconnect', function(){
 

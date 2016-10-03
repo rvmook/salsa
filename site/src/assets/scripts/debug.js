@@ -1,3 +1,5 @@
+var socketHandler = require('./core/socketHandler');
+
 removeObsoleteStyles();
 function removeObsoleteStyles() {
 
@@ -8,3 +10,12 @@ function removeObsoleteStyles() {
 		obsoleteStylesEl.parentNode.removeChild(obsoleteStylesEl);
 	}
 }
+
+socketHandler.init()
+	.then(socketHandler.connectCanvas)
+	.then(function(salsas){
+		console.log('salsas', salsas);
+	})
+	.fail(function(e){
+		console.error(e);
+	});
