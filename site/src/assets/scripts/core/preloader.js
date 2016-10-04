@@ -2,7 +2,7 @@ var threeHandler = require('./threeHandler'),
 	socketHandler = require('./socketHandler'),
 	Q = require('../libs/kew'),
 	preloaderEl = document.querySelector('.preloader'),
-	FAKE_TIME = 3;
+	FAKE_TIME = 7;
 
 function preload() {
 
@@ -12,7 +12,6 @@ function preload() {
 		displayProgress = 0;
 
 	TweenLite.to(fakeProgress, FAKE_TIME, {
-
 		p: 1,
 		onUpdate:updateDisplayProgress
 	});
@@ -22,7 +21,6 @@ function preload() {
 	function updateRealProgress(newProgress) {
 
 		TweenLite.to(realProgress, 0.3, {
-
 			p: newProgress,
 			onUpdate:updateDisplayProgress
 		});
@@ -40,10 +38,12 @@ function preload() {
 
 			displayProgress = newDisplayProgress;
 
-			preloaderEl.style.transform = 'scaleY(' + displayProgress + ')';
+			preloaderEl.style.webkitTransform = 'translate3d(0,' + ((1-displayProgress)*100) + '%,0)';
+			preloaderEl.style.transform = 'translate3d(0,' + ((1-displayProgress)*100) + '%,0)';
 
 			if(displayProgress === 1) {
 
+				preloaderEl.classList.remove('is-animating');
 				preloaderEl.parentNode.removeChild(preloaderEl);
 				deferred.resolve();
 			}
