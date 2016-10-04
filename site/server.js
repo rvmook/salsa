@@ -2,69 +2,104 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var port = process.env.PORT || 3000;
+var communicatedSalsas = '{}';
 
 app.use(express.static('public'));
 
 var io = require('socket.io')(http);
-var counter = 0;
 var connectedSalsas = {};
-var _canvasSocket;
+var _canvasSockets = {};
+
+var idCounter = 1;
+
+function getNewId() {
+
+	return String(idCounter++);
+}
 
 io.on('connection', function(socket){
 
+	socket.on('disconnectSalsa', onDisconnectSalsa);
+	socket.on('rotateSalsa', onRotateSalsa);
+
 	socket.on('connectCanvas', function(){
 
-		console.log('connectCanvas');
-
-		_canvasSocket = socket;
+		_canvasSockets[socket.id] = socket;
+		socket.emit('canvasConnected', connectedSalsas);
 
 		socket.on('disconnect', function(){
 
-			_canvasSocket = false;
+			delete _canvasSockets[socket.id];
 		});
 	});
 
 	socket.on('connectSalsa', function(){
 
-		console.log('connectSalsa');
-
-		var id = getUniqueId();
-		connectedSalsas[id] = {id:id};
-
-		io.to(socket.id).emit('salsaConnectedAs', id);
-		emitToCanvas('newSalsa', [id]);
-		socket.on('disconnect', function(){
-
-			console.log('disconnectSalsa', id);
-
-			emitToCanvas('fall', [id]);
-
-			delete connectedSalsas[id];
-		});
-
-		socket.on('rotate', function(angle){
-
-			console.log('rotate', angle);
-			emitToCanvas('rotate', [id, angle]);
-		});
+		socket.on('rotateSalsa', onRotateSalsa);
+		newSalsa(socket, getNewId());
 	});
 });
 
-function emitToCanvas(message, params) {
 
-	console.log('emitToCanvas', message, params, Boolean(_canvasSocket));
-	if(_canvasSocket) {
+function newSalsa(socket, id) {
 
+	var salsa = {
+		id:id,
+		angle: 0
+	};
 
-		io.to(_canvasSocket.id).emit.apply(io.to(_canvasSocket.id), [message].concat(params));
+	connectedSalsas[id] = salsa;
+
+	socket.on('disconnect', disconnect);
+
+	socket.emit('salsaConnectedAs', id);
+
+	sendSalsasToCanvas();
+
+	function disconnect(){
+		onDisconnectSalsa(id);
 	}
 }
 
-function getUniqueId() {
+function onRotateSalsa(rotatedId, angle) {
 
-	return String(counter++);
+	if(connectedSalsas.hasOwnProperty(rotatedId)) {
+
+		connectedSalsas[rotatedId].angle = angle;
+		sendSalsasToCanvas();
+	}
 }
 
-http.listen(port, function(){
-	console.log('Sample Application Listening on Port ' + port);
-});
+function onDisconnectSalsa(disconnectedId) {
+
+	if(connectedSalsas.hasOwnProperty(disconnectedId)) {
+
+		delete connectedSalsas[disconnectedId];
+
+		sendSalsasToCanvas();
+	}
+}
+
+function sendSalsasToCanvas() {
+
+	if(communicatedSalsas !== JSON.stringify(connectedSalsas)) {
+
+		communicatedSalsas = JSON.stringify(connectedSalsas);
+		emitToCanvas('updateSalsas', [connectedSalsas]);
+	}
+}
+
+function emitToCanvas(message, params) {
+
+	var key;
+
+	for(key in _canvasSockets) {
+
+		if(_canvasSockets.hasOwnProperty(key)) {
+
+			io.to(key).emit.apply(io.to(key), [message].concat(params));
+		}
+	}
+}
+
+http.listen(port);

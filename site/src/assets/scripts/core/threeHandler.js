@@ -1,18 +1,20 @@
-var socket = require('./socketHandler').socket,
+var socketHandler = require('./socketHandler'),
 	TOTAL_ASSETS = 2,
 	_wrapperEl,
 	_currentRotation,
 	_camera,
 	_ambient,
 	_scene,
+	_rotated,
 	_renderer,
 	_salsa,
 	_rotationRadians = 3.14159,
 	_canvasWidth,
 	_canvasHeight;
 
-function init() {
+function init(rotated) {
 
+	_rotated = rotated;
 	_wrapperEl = document.querySelector('.wrapper');
 
 	_canvasWidth = _wrapperEl.offsetWidth;
@@ -124,7 +126,7 @@ function onDocumentMouseMove( event ) {
 		_currentRotation = newRotationDeg;
 		_rotationRadians = _currentRotation * (Math.PI/180);
 
-		socket.emit('rotate', _currentRotation);
+		_rotated.dispatch(_currentRotation);
 	}
 
 }

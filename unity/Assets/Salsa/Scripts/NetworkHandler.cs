@@ -16,9 +16,10 @@ public class NetworkHandler : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-
+		Debug.Log("Start");
 		
-		manager = new SocketManager(new Uri("http://salsa-env.us-east-1.elasticbeanstalk.com/socket.io/"));
+		manager = new SocketManager(new Uri("http://localhost:3000/socket.io/"));
+//		manager = new SocketManager(new Uri("http://salsa-env.us-east-1.elasticbeanstalk.com/socket.io/"));
 
 
 		manager.Socket.On("connect", OnConnect);
