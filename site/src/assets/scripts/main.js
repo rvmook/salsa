@@ -14,6 +14,7 @@ Q.all([
 	preloader.load(),
 	setupSocket()
 ]).then(threeHandler.start)
+	.then(preloader.destroy)
 	.fail(function(e){
 		console.error(e);
 	});

@@ -2,7 +2,7 @@ var threeHandler = require('./threeHandler'),
 	socketHandler = require('./socketHandler'),
 	Q = require('../libs/kew'),
 	preloaderEl = document.querySelector('.preloader'),
-	FAKE_TIME = 7;
+	FAKE_TIME = 6.5;
 
 function preload() {
 
@@ -44,11 +44,17 @@ function preload() {
 			if(displayProgress === 1) {
 
 				preloaderEl.classList.remove('is-animating');
-				preloaderEl.parentNode.removeChild(preloaderEl);
 				deferred.resolve();
 			}
 		}
 	}
 }
 
+function destroy() {
+
+
+	preloaderEl.parentNode.removeChild(preloaderEl);
+}
+
 exports.load = preload;
+exports.destroy = destroy;
