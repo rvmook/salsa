@@ -1,8 +1,19 @@
 var socket = io(),
+	Signal = require('../libs/signals'),
+	salsasUpdated = new Signal(),
+	reconnected = new Signal(),
 	Q = require('../libs/kew'),
 	TIMEOUT_DURATION = 5000;
 
-exports.socket = socket;
+
+exports.salsasUpdated = salsasUpdated;
+exports.reconnected = reconnected;
+exports.emit = function(message, params){
+
+	console.log('emit', message, params);
+	socket.emit.apply(socket, [message].concat(params));
+};
+
 exports.init = function() {
 
 	var deferred = Q.defer();
@@ -121,7 +132,8 @@ exports.connectCanvas = function() {
 	function onCanvasConnected(salsas) {
 
 		cleanup();
-		updateStatus('onCanvasConnected - ' + salsas);
+		updateStatus('onCanvasConnected');
+		socket.on('updateSalsas', onUpdateSalsas);
 		deferred.resolve(salsas);
 	}
 
@@ -132,11 +144,18 @@ exports.connectCanvas = function() {
 	}
 };
 
+function onUpdateSalsas(newSalsas) {
+
+	salsasUpdated.dispatch(newSalsas);
+}
+
 /**
  * Fired upon a successful reconnection
  * @param {Number} reconnectionAttemptNumber
  */
 function onReconnect(reconnectionAttemptNumber) {
+
+	reconnected.dispatch();
 	updateStatus('onReconnect - reconnectionAttemptNumber - ' + reconnectionAttemptNumber);
 }
 
@@ -172,5 +191,5 @@ function onReconnectFailed() {
 
 function updateStatus(status) {
 
-	console.log('status:', status);
+	// console.log('status:', status);
 }

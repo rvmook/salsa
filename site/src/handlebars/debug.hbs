@@ -1,14 +1,16 @@
 {{#> layout js="debug" }}
-	<div class="debug__controls">
-		<p>Connected Salsas: </p>
-		<button>Add a Salsa</button>
+	<div class="debug__controls js-debugControls">
+		<p>Connected Salsas: <span class="js-salsas__count"></span></p>
+		<button class="js-debugControls__add">Add a Salsa</button>
 	</div>
-	<div class="debug__list">
-		<div class="debug__salsa">
-			<div>Id:</div>
-			<div>Rotation:</div>
-			<input placeholder="New Rotation" /><br>
-			<button>Disconnect</button>
+	<div class="debug__list js-salsas">
+		<div class="debug__list js-salsas">
+			<div class="debug__salsa js-salsas__template" style="display:none">
+				<div>Id: <span class="js-salsas__id"></span></div>
+				<div>Rotation: <span class="js-salsas__rotation"></span></div>
+				<input class="debug__salsa__slider js-salsas__rotation-controller" type="range" min="0" max="360" step="1" />
+				<button class="js-salsas__disconnect">Disconnect</button>
+			</div>
 		</div>
 	</div>
 {{/layout}}

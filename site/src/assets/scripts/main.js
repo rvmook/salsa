@@ -1,11 +1,14 @@
 require('./libs/OBJLoader');
 var preloader = require('./core/preloader'),
 	Q = require('./libs/kew'),
+	Signal = require('./libs/signals'),
+	rotated = new Signal(),
 	socketHandler = require('./core/socketHandler');
 
-var threeHandler = require('./core/threeHandler');
+var threeHandler = require('./core/threeHandler'),
+	_salsaId;
 
-threeHandler.init();
+threeHandler.init(rotated);
 removeObsoleteStyles();
 Q.all([
 	preloader.load(),
@@ -16,17 +19,32 @@ Q.all([
 	});
 
 
+rotated.add(onRotated);
+
 function setupSocket() {
 
-	console.log('setupSocket');
-
 	return socketHandler.init()
-		.then(socketHandler.connectSalsa)
+		.then(connectAsSalsa);
+}
+
+function connectAsSalsa() {
+
+	return socketHandler.connectSalsa()
 		.then(function(salsaId){
-			console.log('connected as', salsaId);
+			_salsaId = salsaId;
+
+			socketHandler.reconnected.addOnce(connectAsSalsa);
 		})
 }
 
+
+function onRotated(newRotation) {
+
+	if(_salsaId) {
+
+		socketHandler.emit('rotateSalsa', [_salsaId, newRotation])
+	}
+}
 
 
 function removeObsoleteStyles() {
