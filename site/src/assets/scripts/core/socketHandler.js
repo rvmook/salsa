@@ -10,7 +10,6 @@ exports.salsasUpdated = salsasUpdated;
 exports.reconnected = reconnected;
 exports.emit = function(message, params){
 
-	console.log('emit', message, params);
 	socket.emit.apply(socket, [message].concat(params));
 };
 

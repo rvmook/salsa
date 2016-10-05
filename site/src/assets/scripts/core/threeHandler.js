@@ -13,7 +13,6 @@ var controller = require('./controller'),
 function init() {
 
 	_wrapperEl = document.querySelector('.wrapper');
-
 	_canvasWidth = _wrapperEl.offsetWidth;
 	_canvasHeight = _wrapperEl.offsetHeight;
 

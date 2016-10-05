@@ -75,7 +75,7 @@ function setupSalsas(salsasEl, salsas) {
 
 		idEl.innerHTML = salsa.id;
 		rotationEl.innerHTML = salsa.angle + '°';
-		rotationController.value = salsa.angle;
+		rotationController.value = clampAngle(salsa.angle);
 
 		disconnectEl.addEventListener('click', onDisconnectClick);
 
@@ -93,6 +93,16 @@ function setupSalsas(salsasEl, salsas) {
 	}
 }
 
+function clampAngle(angle) {
+	if(angle < 0) {
+
+		return 360 + (angle % 360);
+
+	} else {
+
+		return angle % 360;
+	}
+}
 
 function setupControls(controlsEl) {
 
