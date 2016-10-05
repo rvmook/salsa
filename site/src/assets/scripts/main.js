@@ -3,12 +3,15 @@ var preloader = require('./core/preloader'),
 	Q = require('./libs/kew'),
 	Signal = require('./libs/signals'),
 	rotated = new Signal(),
+	turned = new Signal(),
 	socketHandler = require('./core/socketHandler');
 
 var threeHandler = require('./core/threeHandler'),
+	controller = require('./core/controller'),
 	_salsaId;
 
-threeHandler.init(rotated);
+controller.init(rotated, turned);
+threeHandler.init();
 removeObsoleteStyles();
 Q.all([
 	preloader.load(),
@@ -38,6 +41,14 @@ function connectAsSalsa() {
 		})
 }
 
+
+function onTurned(newTurn) {
+
+	if(_salsaId) {
+
+		socketHandler.emit('turnSalsa', [_salsaId, newTurn])
+	}
+}
 
 function onRotated(newRotation) {
 

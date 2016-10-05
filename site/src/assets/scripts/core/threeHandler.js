@@ -1,22 +1,18 @@
-var socketHandler = require('./socketHandler'),
+var controller = require('./controller'),
 	TOTAL_ASSETS = 2,
 	_wrapperEl,
-	_currentRotation,
 	_camera,
 	_ambient,
 	_scene,
-	_rotated,
 	_renderer,
 	_salsa,
 	_rotationRadians = 3.14159,
 	_canvasWidth,
 	_canvasHeight;
 
-function init(rotated) {
+function init() {
 
-	_rotated = rotated;
 	_wrapperEl = document.querySelector('.wrapper');
-
 	_canvasWidth = _wrapperEl.offsetWidth;
 	_canvasHeight = _wrapperEl.offsetHeight;
 
@@ -98,18 +94,24 @@ function render() {
 	requestAnimationFrame(render);
 }
 
+function onRotationUpdated(x,y,z) {
+
+	_rotationRadians = y * (Math.PI/180);
+}
+
 function start() {
 	_scene.background = new THREE.Color(0x99D5D6);
 	_scene.add(_salsa);
-	document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+	controller.rotationUpdated.add(onRotationUpdated);
 	window.addEventListener('resize', onWindowResize, false);
 	render();
 }
 
 function onWindowResize() {
 
-	_canvasWidth = window.innerWidth;
-	_canvasHeight = window.innerHeight;
+	_canvasWidth = _wrapperEl.offsetWidth;
+	_canvasHeight = _wrapperEl.offsetHeight;
 
 	_camera.aspect = _canvasWidth / _canvasHeight;
 	_camera.updateProjectionMatrix();
@@ -117,24 +119,6 @@ function onWindowResize() {
 	_renderer.setSize(_canvasWidth, _canvasHeight);
 }
 
-function onDocumentMouseMove( event ) {
-
-	var newRotationDeg = roundTo(360 * (event.clientX / window.innerWidth), 1);
-
-	if(_currentRotation !== newRotationDeg) {
-
-		_currentRotation = newRotationDeg;
-		_rotationRadians = _currentRotation * (Math.PI/180);
-
-		_rotated.dispatch(_currentRotation);
-	}
-
-}
-
-function roundTo(value, round) {
-
-	return Math.round(value / round) * round;
-}
 
 exports.init = init;
 exports.preload = preload;

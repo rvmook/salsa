@@ -6,3 +6,16 @@
 // which is why it should stay empty.
 //
 // --------------------------------------------------------------------
+
+
+.pointer {
+
+	position: absolute;
+	top: 50px;
+	right: 40px;
+	width: 2px;
+	height: 20px;
+	margin-top: -10px;
+	transform: scale(0);
+	background-color: #EA7C89;
+}
