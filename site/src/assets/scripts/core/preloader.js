@@ -1,4 +1,5 @@
 var threeHandler = require('./threeHandler'),
+	letters = require('./letters'),
 	socketHandler = require('./socketHandler'),
 	Q = require('../libs/kew'),
 	preloaderEl = document.querySelector('.preloader'),

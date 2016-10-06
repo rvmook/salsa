@@ -4,6 +4,7 @@ var preloader = require('./core/preloader'),
 	Signal = require('./libs/signals'),
 	rotated = new Signal(),
 	turned = new Signal(),
+	letters = require('./core/letters'),
 	socketHandler = require('./core/socketHandler');
 
 var threeHandler = require('./core/threeHandler'),
@@ -14,9 +15,12 @@ controller.init(rotated, turned);
 threeHandler.init();
 removeObsoleteStyles();
 Q.all([
+	letters.init(),
 	preloader.load(),
 	setupSocket()
-]).then(threeHandler.start)
+])
+	.then(letters.hide)
+	.then(threeHandler.start)
 	.then(preloader.destroy)
 	.fail(function(e){
 		console.error(e);
@@ -68,3 +72,14 @@ function removeObsoleteStyles() {
 		obsoleteStylesEl.parentNode.removeChild(obsoleteStylesEl);
 	}
 }
+
+
+/*
+
+
+ ffmpeg -i *.png -vf scale=640:-1 test-small.png
+ ffmpeg -i test-small.png -vf crop=316:76:162:480 test-smaller.png
+
+ mkdir encoded
+ $ for f in *.png; do ffmpeg -i "$f" -vf crop=316:76:162:480 cropped/"$f"; done
+ */
