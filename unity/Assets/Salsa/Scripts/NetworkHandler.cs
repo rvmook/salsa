@@ -24,11 +24,24 @@ public class NetworkHandler : MonoBehaviour {
 
 		manager.Socket.On("connect", OnConnect);
 		manager.Socket.On("connect_error", OnConnectError);
+		manager.Socket.On("canvasConnected", OnCanvasConnected);
 		manager.Socket.On("connect_timeout", OnConnectTimeout);
 
 		manager.Socket.On("fall", OnFall);
 		manager.Socket.On("rotate", OnRotate);
 		manager.Socket.On("newSalsa", OnNewSalsa);
+	}
+
+	void OnCanvasConnected(Socket socket, Packet packet, params object[] args) {
+
+
+		Dictionary<string, object> _salsas = (Dictionary<string, object>)args[0];
+
+		foreach(KeyValuePair<string, object> salsaKv in _salsas) {
+
+			Dictionary<string, object> salsa = (Dictionary<string, object>)_salsas[salsaKv.Key];
+			Debug.Log("salsa: " +  salsa["id"] + " " + salsa["angle"]);
+		}
 	}
 
 	void OnNewSalsa(Socket socket, Packet packet, params object[] args) {
