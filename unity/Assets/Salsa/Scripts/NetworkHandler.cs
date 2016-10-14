@@ -25,38 +25,44 @@ public class NetworkHandler : MonoBehaviour {
 		manager.Socket.On("connect", OnConnect);
 		manager.Socket.On("connect_error", OnConnectError);
 		manager.Socket.On("canvasConnected", OnCanvasConnected);
+		manager.Socket.On("update", OnUpdateSalsas);
 		manager.Socket.On("connect_timeout", OnConnectTimeout);
-
-		manager.Socket.On("fall", OnFall);
-		manager.Socket.On("rotate", OnRotate);
-		manager.Socket.On("newSalsa", OnNewSalsa);
 	}
 
 	void OnCanvasConnected(Socket socket, Packet packet, params object[] args) {
+		
+		ParseSalsas((Dictionary<string, object>)args[0]);
+	}
 
+	void OnUpdateSalsas(Socket socket, Packet packet, params object[] args) {
+		
+		ParseSalsas((Dictionary<string, object>)args[0]);
+	}
 
-		Dictionary<string, object> _salsas = (Dictionary<string, object>)args[0];
+	void ParseSalsas(Dictionary<string, object> newSalsas) {
+		
+		foreach(KeyValuePair<string, object> salsaKv in newSalsas) {
 
-		foreach(KeyValuePair<string, object> salsaKv in _salsas) {
+			Dictionary<string, object> salsa = (Dictionary<string, object>)newSalsas[salsaKv.Key];
 
-			Dictionary<string, object> salsa = (Dictionary<string, object>)_salsas[salsaKv.Key];
-			Debug.Log("salsa: " +  salsa["id"] + " " + salsa["angle"]);
+			string salsaId = (string)salsa["id"];
+			double salsaAngle = (double)salsa["angle"];			
+
+			if(salsas.ContainsKey(salsaId)) {
+
+				Salsa rotatingSalsa = salsas[salsaId].GetComponent<Salsa>();
+
+				rotatingSalsa.Rotate((float)salsaAngle);
+
+			} else {
+
+				AddSalsa(salsaId);
+			}
 		}
 	}
 
-	void OnNewSalsa(Socket socket, Packet packet, params object[] args) {
-
-		String id = (String)args[0];
-
-		Debug.Log("OnNewSalsa, id: " + id);
-
-		AddSalsa(id);
-	}
-
 	void AddSalsa(String id) {
-
-		Debug.Log("AddSalsa, id: " + id);
-
+			
 		GameObject salsa = (GameObject)Instantiate(salsaPrefab, transform.position,Quaternion.identity);
 
 		salsas.Add(id, salsa);
@@ -72,21 +78,6 @@ public class NetworkHandler : MonoBehaviour {
 			Salsa fallingSalsa = salsas[id].GetComponent<Salsa>();
 
 			fallingSalsa.fall();	   
-		}
-	}
-
-	void OnRotate(Socket socket, Packet packet, params object[] args) {
-
-		String id = (String)args[0];
-		double angle = (double)args[1];
-
-		Debug.Log("OnRotate, id: " + id);
-
-		if(salsas.ContainsKey(id)) {
-
-			Salsa rotatingSalsa = salsas[id].GetComponent<Salsa>();
-
-			rotatingSalsa.Rotate((float)angle);
 		}
 	}
 

@@ -5,10 +5,10 @@ var socket = io(),
 	Q = require('../libs/kew'),
 	TIMEOUT_DURATION = 5000;
 
-
 exports.salsasUpdated = salsasUpdated;
 exports.reconnected = reconnected;
 exports.emit = function(message, params){
+
 
 	socket.emit.apply(socket, [message].concat(params));
 };
@@ -132,7 +132,7 @@ exports.connectCanvas = function() {
 
 		cleanup();
 		updateStatus('onCanvasConnected');
-		socket.on('updateSalsas', onUpdateSalsas);
+		socket.on('update', onUpdate);
 		deferred.resolve(salsas);
 	}
 
@@ -143,7 +143,7 @@ exports.connectCanvas = function() {
 	}
 };
 
-function onUpdateSalsas(newSalsas) {
+function onUpdate(newSalsas) {
 
 	salsasUpdated.dispatch(newSalsas);
 }
