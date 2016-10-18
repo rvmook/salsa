@@ -17,6 +17,8 @@ socketHandler.init()
 	.then(socketHandler.connectCanvas)
 	.then(function(salsas){
 
+		console.log('salsas', salsas);
+
 		setupControls(doc.querySelector('.js-debugControls'));
 		setupSalsas(doc.querySelector('.js-salsas'), salsas);
 	})
@@ -42,20 +44,19 @@ function setupSalsas(salsasEl, salsas) {
 
 	onSalsasUpdated(salsas);
 
-	function onSalsasUpdated(salsas) {
+	function onSalsasUpdated(rawSalsas) {
 
-		var count = 0,
-			key;
+
+		var salsas = parseSalsas(rawSalsas),
+			count = 0,
+			i;
 
 		salsasEl.innerHTML = '';
 
-		for(key in salsas) {
+		for(i = 0; i < salsas.length; i++) {
 
-			if(salsas.hasOwnProperty(key)) {
-
-				count++;
-				addSalsa(salsas[key])
-			}
+			count++;
+			addSalsa(salsas[i]);
 		}
 
 		countEl.innerHTML = count;
@@ -74,8 +75,19 @@ function setupSalsas(salsasEl, salsas) {
 			disconnectEl = div.querySelector('.js-salsas__disconnect');
 
 		idEl.innerHTML = salsa.id;
-		rotationEl.innerHTML = salsa.angle + '°';
-		rotationController.value = clampAngle(salsa.angle);
+
+		rotationEl.innerHTML += 'suit: ' + salsa.suit + '<br>';
+		rotationEl.innerHTML += 'skin: ' + salsa.skin + '<br>';
+		rotationEl.innerHTML += 'goggle: ' + salsa.goggle + '<br>';
+
+		if(salsa.swimming) {
+
+			rotationEl.innerHTML += 'swimming: ' + salsa.swimming + '<br>';
+			rotationEl.innerHTML += 'direction: ' + salsa.direction + '<br>';
+			rotationEl.innerHTML += 'rotation: ' + salsa.rotation;
+			rotationController.value = clampAngle(salsa.rotation);
+		}
+
 
 		disconnectEl.addEventListener('click', onDisconnectClick);
 
@@ -88,6 +100,7 @@ function setupSalsas(salsasEl, salsas) {
 
 		function onRotationChange() {
 
+			console.log('onRotationChange() - rotateSalsa', [salsa.id, rotationController.value]);
 			socketHandler.emit('rotateSalsa', [salsa.id, rotationController.value]);
 		}
 	}
@@ -118,4 +131,51 @@ function setupControls(controlsEl) {
 
 		socketHandler.connectSalsa();
 	}
+}
+
+function parseSalsas(rawSalsas) {
+
+	var salsas = rawSalsas.split(';'),
+		parsed = [],
+		salsa,
+		salsaParts,
+		id,
+		suit,
+		skin,
+		goggle,
+
+		swimming,
+		rotation,
+		direction,
+		i;
+
+	for(i = 0; i < salsas.length; i++) {
+
+		salsa = salsas[i];
+		if(salsa.length === 0) {
+
+			continue;
+		}
+		salsaParts = salsa.split(',');
+
+		id = salsaParts[0];
+		suit = salsaParts[1][0];
+		skin = salsaParts[1][1];
+		goggle = salsaParts[1][2];
+		rotation = salsaParts[2];
+		direction = salsaParts[3];
+		swimming = (rotation !== undefined && direction !== undefined);
+
+		parsed.push({
+			id:Number(id),
+			suit:Number(suit),
+			skin:Number(skin),
+			goggle:Number(goggle),
+			rotation:Number(rotation),
+			direction:Number(direction),
+			swimming:swimming
+		})
+	}
+
+	return parsed;
 }
