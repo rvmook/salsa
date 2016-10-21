@@ -13,13 +13,15 @@ var _canvasSockets = {};
 function getNewSalsa() {
 
 	var SWIM_WEAR = [0,1,2,3,4],
-		SKIN_TONE = [0,0,0,0,0,1,1,1,2,2],
-		GOGGLE_TYPE = [0,1];
+		SKIN_TONE = [0,0,0,0,0,0,1,1,1,2,2],
+		GOGGLE_TYPE = [0,1],
+		ANIMATION_TYPE = [0,1,2,3,4,5,6];
 
 	return {
-		suit:getRandomFromArr(SWIM_WEAR),
+		bikini:getRandomFromArr(SWIM_WEAR),
 		skin:getRandomFromArr(SKIN_TONE),
 		goggle:getRandomFromArr(GOGGLE_TYPE),
+		animation:getRandomFromArr(ANIMATION_TYPE),
 		index:_connectedSalsas.length,
 		swimming:1,
 		rotation:0,
@@ -66,7 +68,7 @@ function newSalsa(socket) {
 
 	socket.on('disconnect', disconnect);
 
-	socket.emit('salsaConnectedAs', index);
+	socket.emit('salsaConnectedAs', salsa);
 
 	sendSalsasToCanvas();
 
@@ -125,7 +127,7 @@ function composeSalsas() {
 			string += ';';
 		}
 
-		string += salsa.index + ',' + salsa.suit + salsa.skin + salsa.goggle;
+		string += salsa.index + ',' + salsa.bikini + salsa.skin + salsa.goggle;
 
 		if(salsa.swimming) {
 

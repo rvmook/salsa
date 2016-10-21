@@ -17,7 +17,7 @@ function preload() {
 		onUpdate:updateDisplayProgress
 	});
 
-	threeHandler.preload(updateRealProgress);
+	threeHandler.progressUpdated.add(updateRealProgress);
 
 	function updateRealProgress(newProgress) {
 

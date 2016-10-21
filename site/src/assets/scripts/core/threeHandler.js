@@ -1,12 +1,17 @@
 var controller = require('./controller'),
-	TOTAL_ASSETS = 2,
+	globals = require('./globals'),
+	Signal = require('../libs/signals'),
+	ajaxRequest = require('../utils/ajaxRequest'),
+	TOTAL_ASSETS = 1,
 	_wrapperEl,
 	_camera,
 	_ambient,
 	_scene,
 	_renderer,
 	_salsa,
-	_rotationRadians = 3.14159,
+	_pivot,
+	progressUpdated = new Signal(),
+	_rotationRadians = {x:90 * (Math.PI/180),y:3.14159,z:0},
 	_canvasWidth,
 	_canvasHeight;
 
@@ -37,56 +42,71 @@ function init() {
 	_wrapperEl.appendChild(_renderer.domElement);
 }
 
-function preload(progress, loaded) {
+function preload() {
 
 	var loadingManager = new THREE.LoadingManager(),
-		imageLoader = new THREE.ImageLoader(loadingManager),
-		objLoader = new THREE.OBJLoader(loadingManager),
+		// imageLoader = new THREE.ImageLoader(loadingManager),
+		// objLoader = new THREE.OBJLoader(loadingManager),
 		texture = new THREE.Texture(),
 		imageProgress = 0,
 		objProgress = 0;
 
-	loadingManager.onLoad = loaded;
+	console.log('globals', globals.salsa);
 
-	objLoader.load( '/assets/3d/obj/SalsaModel.obj', onModelLoaded, onModelProgress);
-	imageLoader.load( '/assets/3d/textures/SalsaTexture.jpg', onTextureLoaded, onImgProgress);
+	var asset = 'skin-' + globals.salsa.skin + '-bikini-' + globals.salsa.bikini + '.jpg';
 
-	function onImgProgress(xhr) { imageProgress = getProgress(xhr); updateTotalProgress(); }
-	function onModelProgress(xhr) { objProgress = getProgress(xhr); updateTotalProgress(); }
-	function getProgress(xhr) { return xhr.loaded / xhr.total / TOTAL_ASSETS; }
+	// var loader = new THREE.JSONLoader(loadingManager);
+	var materials = [{
 
-	function updateTotalProgress() {
+		'colorDiffuse' : [0.6400000190734865, 0.6400000190734865, 0.6400000190734865],
 
-		var totalProgress = objProgress + imageProgress;
+		'opacity': 1.0,
+		'mapDiffuseRepeat': [1, 1],
+		'depthTest': true,
+		'mapDiffuseWrap': ['repeat', 'repeat'],
+		'blending': 'NormalBlending',
+		'mapDiffuseAnisotropy': 4,
+		'shading': 'Phong',
+		'transparent': false,
+		'depthWrite': true,
+		'DbgName' : 'WHITE',
+		'vertexColors': false,
+		'mapDiffuse': '/textures/' + asset
+	}];
 
-		progress(totalProgress);
-	}
+	ajaxRequest('/assets/3d/salsa-crawl-stroke.json', {onProgress:onRequestProgress})
+		.then(function(jsonResult){
 
-	function onTextureLoaded(image) {
+			var result = JSON.parse(jsonResult),
+				parsedObject;
 
-		texture.image = image;
-		texture.needsUpdate = true;
-	}
+			result.materials = materials;
+			var jsonLoader = new THREE.JSONLoader();
+			parsedObject = jsonLoader.parse(result, '/assets/3d/');
 
-	function onModelLoaded(model) {
-
-		model.traverse(function(child) {
-
-			if (child instanceof THREE.Mesh) {
-
-				child.material.map = texture;
-			}
+			onJsonLoaded(parsedObject.geometry, parsedObject.materials);
+		})
+		.fail(function(error) {
+			console.error('error', error);
 		});
 
-		model.position.y = -50;
-		model.scale.set(20,20,20);
+	function onRequestProgress(progress) {
+
+		progressUpdated.dispatch(progress);
+	}
+
+	function onJsonLoaded(geometry, materials) {
+
+		var model = new THREE.SkinnedMesh( geometry, new THREE.MultiMaterial( materials ) );
+
 		_salsa = model;
+		progressUpdated.dispatch(1);
 	}
 }
 
 function render() {
 
-	_salsa.rotation.set(0, _rotationRadians, 0);
+	_pivot.rotation.set(_rotationRadians.x, _rotationRadians.y, _rotationRadians.z);
 	_camera.lookAt(_scene.position);
 
 	_renderer.render(_scene, _camera);
@@ -96,12 +116,20 @@ function render() {
 
 function onRotationUpdated(x,y,z) {
 
-	_rotationRadians = y * (Math.PI/180);
+	// _rotationRadians.x = x * (Math.PI/180);
+	_rotationRadians.z = y * (Math.PI/180);
+	// _rotationRadians.z = z * (Math.PI/180);
 }
 
 function start() {
+
+	_pivot = new THREE.Object3D();
+	_pivot.add(_salsa);
+
+
+
 	_scene.background = new THREE.Color(0x99D5D6);
-	_scene.add(_salsa);
+	_scene.add(_pivot);
 
 	controller.rotationUpdated.add(onRotationUpdated);
 	window.addEventListener('resize', onWindowResize, false);
@@ -121,6 +149,7 @@ function onWindowResize() {
 
 
 exports.init = init;
+exports.progressUpdated = progressUpdated;
 exports.preload = preload;
 exports.start = start;
 
